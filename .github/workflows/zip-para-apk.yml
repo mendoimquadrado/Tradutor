@@ -1,0 +1,32 @@
+name: Zip para APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extrair o zip
+        run: unzip -q TradutorDeTela.zip -d projeto
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+
+      - name: Compilar
+        working-directory: projeto/TradutorDeTela
+        run: gradle assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TradutorDeTela-apk
+          path: projeto/TradutorDeTela/app/build/outputs/apk/debug/app-debug.apk
